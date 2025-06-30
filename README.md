@@ -1,6 +1,6 @@
 # METTS - PyTorch Implementation (wip)
 
-A PyTorch implementation of [**METTS: Multilingual Emotional Text-to-Speech by Cross-Speaker and Cross-Lingual Emotion Transfer**](https://ieeexplore.ieee.org/document/10423864). 
+A PyTorch implementation of [**MELS-TTS : Multi-Emotion Multi-Lingual Multi-Speaker Text-to-Speech System via Disentangeld Style Token**](https://ieeexplore.ieee.org/document/10446852). 
 
 
 ![](./img/model.png)
@@ -48,7 +48,6 @@ python inference.py
 # References
 - [ming024's FastSpeech2 implementation]https://github.com/ming024/FastSpeech2)
 - [KinglittleQ's GST implementation]https://github.com/KinglittleQ/GST-Tacotron)
-- [jaywalnut310's vits implementation]https://github.com/jaywalnut310/vits)
 
 # Citation
 ```
@@ -65,12 +64,4 @@ python inference.py
   booktitle = {Proc. 35th Int. Conf. Mach. Learn.},
   pages     = {5167--5176},
   year      = {2018}
-}
-
-@inproceedings{Kim2021VITS,
-  author    = {J. Kim and J. Kong and J. Son},
-  title     = {Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech},
-  booktitle = {Proc. 38th Int. Conf. Machine Learning},
-  pages     = {5530--5540},
-  year      = {2021},
 }
