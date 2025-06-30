@@ -40,9 +40,9 @@ python inference.py
 ## Todo
 
 - [x] DelightfulTTS backbone
-- [x] style token
+- [x] style tokens
 
-- [ ] distangel style token
+- [ ] distangel style tokens
 
 # References
 - [ming024's FastSpeech2 implementation]https://github.com/ming024/FastSpeech2)
