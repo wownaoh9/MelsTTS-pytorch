@@ -40,10 +40,9 @@ python inference.py
 ## Todo
 
 - [x] DelightfulTTS backbone
-- [x] Multi-scale emoton modeling
+- [x] style token
 
-- [ ] Information perturbation distanglement module
-- [ ] VQ module
+- [ ] distangel style token
 
 # References
 - [ming024's FastSpeech2 implementation]https://github.com/ming024/FastSpeech2)
