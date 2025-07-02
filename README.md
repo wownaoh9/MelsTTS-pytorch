@@ -1,4 +1,5 @@
 # MelsTTS - PyTorch Implementation (wip)
+MELS-TTS : Multi-Emotion Multi-Lingual Multi-Speaker Text-to-Speech System via Disentangeld Style Token
 
 A PyTorch implementation of [**MELS-TTS : Multi-Emotion Multi-Lingual Multi-Speaker Text-to-Speech System via Disentangeld Style Token**](https://ieeexplore.ieee.org/document/10446852). 
 
