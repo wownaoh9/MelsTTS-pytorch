@@ -88,6 +88,10 @@ class Dataset(Dataset):
         speaker = self.speaker[idx]
         speaker_id = self.speaker_map[speaker]
         emotion = self.emotion[idx]
+        if speaker in self.zh_speakers:
+            lang_id = 0
+        else:
+            lang_id = 1
         emotion_emo_id = self.emotion_map[emotion]
         emotion_neu = "Neutral"
         emotion_neu_id = self.emotion_map[emotion_neu]
@@ -113,7 +117,7 @@ class Dataset(Dataset):
 
             "speaker": speaker_id,
             "emotion_emo": emotion_emo_id,
-            "emotion_neu": emotion_neu_id,
+            "lang_id": lang_id,
 
             "mels": mels,
             "pitch": pitch,
@@ -164,7 +168,8 @@ class Dataset(Dataset):
 
         speaker = np.array([data[idx]["speaker"] for idx in idxs])
         emotion_emo = np.array([data[idx]["emotion_emo"] for idx in idxs])
-        emotion_neu = np.array([data[idx]["emotion_neu"] for idx in idxs])
+        lang_id = np.array([data[idx]["lang_id"] for idx in idxs])
+       
         
         mels = [data[idx]["mels"] for idx in idxs]
         mel_len = np.array([mel.shape[0] for mel in mels])
@@ -197,7 +202,7 @@ class Dataset(Dataset):
 
             speaker,
             emotion_emo,
-            emotion_neu,
+            lang_id,
             
             mels,
             mel_len,

@@ -1,2 +1,2 @@
-from .Models import Encoder, Decoder,EmotionEncoder
+from .Models import Encoder, Decoder
 from .Layers import PostNet

@@ -1,9 +1,9 @@
 path:
-  ckpt_path: "./output/cl_esd/ckpt"
-  log_path: "./output/cl_esd/log"
-  result_path: "./output/cl_esd/result"
+  ckpt_path: "./output/MELSTTS/ckpt"
+  log_path: "./output/MELSTTS/log"
+  result_path: "./output/MELSTTS/result"
 optimizer:
-  batch_size: 12
+  batch_size: 96
   betas: [0.9, 0.98]
   eps: 0.000000001
   weight_decay: 0.0

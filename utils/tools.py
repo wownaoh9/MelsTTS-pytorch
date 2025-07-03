@@ -26,7 +26,7 @@ def to_device(data, device):
 
             speaker,
             emotion_emo,
-            emotion_neu,
+            lang_id,
             
             mels,
             mel_len,
@@ -45,7 +45,7 @@ def to_device(data, device):
 
         speaker = torch.from_numpy(speaker).long().to(device)
         emotion_emo = torch.from_numpy(emotion_emo).long().to(device)
-        emotion_neu = torch.from_numpy(emotion_neu).long().to(device)
+        lang_id = torch.from_numpy(lang_id).long().to(device)
 
         mels = torch.from_numpy(mels).float().to(device)
         mel_len = torch.from_numpy(mel_len).int().to(device)
@@ -65,7 +65,7 @@ def to_device(data, device):
 
             speaker,
             emotion_emo,
-            emotion_neu,
+            lang_id,
             
             mels,
             mel_len,
@@ -90,7 +90,7 @@ def to_device(data, device):
 
             speaker,
             emotion_emo,
-            emotion_neu,
+            lang_id,
 
             mels,
             mel_len,
@@ -104,7 +104,7 @@ def to_device(data, device):
 
         speaker = torch.from_numpy(speaker).long().to(device)
         emotion_emo = torch.from_numpy(emotion_emo).long().to(device)
-        emotion_neu = torch.from_numpy(emotion_neu).long().to(device)
+        lang_id = torch.from_numpy(lang_id).long().to(device)
 
         mels = torch.from_numpy(mels).float().to(device)
         mel_len = torch.from_numpy(mel_len).int().to(device)
@@ -120,7 +120,7 @@ def to_device(data, device):
 
             speaker,
             emotion_emo,
-            emotion_neu,
+            lang_id,
             
             mels ,
             mel_len,
@@ -141,14 +141,11 @@ def log(
 ):
     if losses is not None:
         logger.add_scalar("1_Loss/total_loss", losses[0], step)
-        logger.add_scalar("2_Loss/mel_loss_5", losses[1], step)
-        logger.add_scalar("3_Loss/mel_loss_6", losses[2], step)
-        logger.add_scalar("4_Loss/ssim_loss", losses[3], step)
-        logger.add_scalar("5_Loss/pitch_loss", losses[4], step)
-        logger.add_scalar("6_Loss/energy_loss", losses[5], step)
-        logger.add_scalar("7_Loss/duration_loss", losses[6], step)
-        logger.add_scalar("8_Loss/ce_loss", losses[7], step)
-        logger.add_scalar("9_Loss/kl_loss", losses[8], step)
+        logger.add_scalar("2_Loss/mel_loss", losses[1], step)
+        logger.add_scalar("3_Loss/postnet_loss", losses[2], step)
+        logger.add_scalar("4_Loss/pitch_loss", losses[3], step)
+        logger.add_scalar("5_Loss/energy_loss", losses[4], step)
+        logger.add_scalar("6_Loss/duration_loss", losses[5], step)
 
     if fig is not None:
         logger.add_figure(tag, fig)

@@ -61,16 +61,27 @@ class SpeakerEncoder(nn.Module):
                 n_speaker = len(json.load(f))
         self.embedding = nn.Embedding(
                 n_speaker,
-                model_config["conformer"]["encoder_hidden"],
+                64,
             )
     def forward(self, speaker):
         speaker_embedding = self.embedding(speaker)
         return speaker_embedding
 
+class  LangEncoder(nn.Module):
+    def __init__(self, preprocess_config, model_config):
+        super().__init__()
+        self.embedding = nn.Embedding(
+                2,
+                64,
+            )
+    def forward(self, lang):
+        lang_embedding = self.embedding(lang)
+        return lang_embedding
+
 class CoarseEmoExtractionModule(nn.Module): 
     def __init__(self, preprocess_config, model_config):
         super().__init__()
-        self.GST = GST(model_config)
+        self.GST = GST(model_config)    
         with open(
                 os.path.join(
                     preprocess_config["path"]["preprocessed_path"], "emotions.json"
@@ -80,8 +91,8 @@ class CoarseEmoExtractionModule(nn.Module):
                 n_emotion = len(json.load(f))
 
         self.Classifier = Classifier(model_config["gst"]["E"], n_emotion)
-    def forward(self, mels, mel_len):
-        coarse_emo_emb = self.GST(mels, mel_len)
+    def forward(self, mels, mel_len, emotion_emo, speaker_embedding, language_embedding):
+        coarse_emo_emb = self.GST(mels, mel_len, emotion_emo, speaker_embedding, language_embedding)
         cls_emb = coarse_emo_emb 
         return coarse_emo_emb, cls_emb
 
