@@ -12,7 +12,7 @@ import scipy
 import logging
 
 from utils.getModel_utils import get_model_fs, get_vocoder
-from utils.tools import to_device_mix, synth_one_sample, synth_infer_sample
+from utils.tools import to_device, synth_one_sample, synth_infer_sample
 from utils.text_utils import preprocess_english,preprocess_mandarin
 from text import text_to_sequence
 
@@ -144,7 +144,7 @@ def inference(model, step, configs, infer_speaker_str, refer_speaker_str, emotio
     raw_text = "你们这是在逃避责任。"
     id = raw_text[:100]
     phones = preprocess_mandarin(raw_text, preprocess_config)
-    srcs = np.array(text_to_sequence("{"+phones+"}", preprocess_config["preprocessing"]["text"]["text_cleaners"]))
+    srcs = np.array(text_to_sequence("{"+phones+"}", preprocess_config["preprocessing"]["text"]["zh_text_cleaners"]))
     src_len = np.array([len(srcs)])
 
     #get ref emo wav
@@ -163,7 +163,7 @@ def inference(model, step, configs, infer_speaker_str, refer_speaker_str, emotio
                )]
 
     for batch in batchs:
-        batch = to_device_mix(batch, device)
+        batch = to_device(batch, device)
         with torch.no_grad():
 
             output = model.infer(
@@ -228,16 +228,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--device", type=str, default="cuda:0", help="Device to use")
-    parser.add_argument("-r","--restore_step", type=int, default=200000, help="path to **.tar")
-
+    parser.add_argument("-r","--restore_step", type=int, default=86000, help="path to **.tar")
     parser.add_argument(
-        "-p","--preprocess_config",type=str,required=False,default="config/ESD_zh/preprocess.yaml",help="path to preprocess.yaml",
+        "-p","--preprocess_config",type=str,required=False,default="config/cl_esd/preprocess.yaml",help="path to preprocess.yaml",
     )
     parser.add_argument(
-        "-m", "--model_config", type=str, required=False,default="config/ESD_zh/model.yaml", help="path to model.yaml"
+        "-m", "--model_config", type=str, required=False,default="config/cl_esd/model.yaml", help="path to model.yaml"
     )
     parser.add_argument(
-        "-t", "--train_config", type=str, required=False,default="config/ESD_zh/train.yaml", help="path to train.yaml"
+        "-t", "--train_config", type=str, required=False,default="config/cl_esd/train.yaml", help="path to train.yaml"
     )
 
     args = parser.parse_args()
