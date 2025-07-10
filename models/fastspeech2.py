@@ -86,7 +86,7 @@ class FastSpeech2(nn.Module):
             train = train
         )
 
-        #six conformer decoder to compute mel_loss seperately
+        #
         output, mel_masks= self.decoder(output, mel_mask)
         output = self.mel_linear(output)
 
@@ -138,8 +138,16 @@ class FastSpeech2(nn.Module):
         
         output = output + coarse_emo_emb.unsqueeze(1).repeat(1, output.size(1), 1)
 
-        
+
         #variance adapter
+        mels = None
+        mel_len = None
+        max_mel_len = None
+        mel_mask = (
+            get_mask_from_lengths(mel_len, max_mel_len, device)
+            if mel_len is not None
+            else None
+        )
         (   output,
             p_predictions, e_predictions, log_d_predictions, d_rounded,
             mel_lens, mel_mask
@@ -152,7 +160,7 @@ class FastSpeech2(nn.Module):
             train = train
         )
 
-        #six conformer decoder to compute mel_loss seperately
+        #
         output, mel_masks= self.decoder(output, mel_mask)
         output = self.mel_linear(output)
 

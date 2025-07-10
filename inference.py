@@ -31,7 +31,7 @@ def _load_fs2data(preprocessed_path, data_name, speaker, emotion, basename):
     data_name_path = os.path.join(
         preprocessed_path,
         data_name,
-        "{}-{}-{}-{}_{}.npy".format(speaker, emotion, data_name, speaker, basename)
+        "{}-{}-{}-{}.npy".format(speaker, emotion, data_name, basename)
     )
 
     data = np.load(data_name_path)
@@ -61,20 +61,33 @@ def main(args, configs):    #args是命令行输入，configs是配置文件
     model= get_model_fs(args, configs, device, train=False)
     vocoder = get_vocoder(model_config, device)
 
-    #get infer emotion audio
+    # zh
     emotion_list = ["Neutral","Angry","Happy","Sad","Surprise"]
     basename_list = ["000326", "000676", "001026", "001376", "001726"]
     refer_speaker_list = ["0003", "0004", "0007", "0008", ]
-    infer_speaker_list = ["0003", "0004", "0007", "0008", "001"]
+    infer_speaker_list = ["0003", "0004", "0007", "0008"]
     for infer_speaker_str in infer_speaker_list:
         for refer_speaker_str in refer_speaker_list:
             for (emotion_str, basename_str) in zip(emotion_list, basename_list):
                 basename_str = f"{refer_speaker_str}_{basename_str}" 
                 inference_zh(model, step = step, configs = configs,
-                            infer_speaker_str = infer_speaker_str,
-                            refer_speaker_str = refer_speaker_str, emotion_str = emotion_str, basename_str = basename_str, 
-                            logger=None, vocoder=vocoder, device=device)
-
+                            infer_speaker = infer_speaker_str,
+                            refer_speaker = refer_speaker_str, refer_emotion = emotion_str, refer_basename = basename_str, 
+                            vocoder=vocoder, device=device)
+    
+    # en
+    emotion_list = ["Neutral","Angry","Happy","Sad","Surprise"]
+    basename_list = ["000326", "000676", "001026", "001376", "001726"]
+    refer_speaker_list = ["0003", "0004", "0007", "0008", ]
+    infer_speaker_list = ["0003", "0004", "0007", "0008"]
+    for infer_speaker_str in infer_speaker_list:
+        for refer_speaker_str in refer_speaker_list:
+            for (emotion_str, basename_str) in zip(emotion_list, basename_list):
+                basename_str = f"{refer_speaker_str}_{basename_str}" 
+                inference_en(model, step = step, configs = configs,
+                            infer_speaker = infer_speaker_str,
+                            refer_speaker = refer_speaker_str, refer_emotion = emotion_str, refer_basename = basename_str, 
+                            vocoder=vocoder, device=device)
 def inference_zh(model, step, configs, vocoder, device,
                 infer_speaker,
                 refer_speaker, refer_emotion, refer_basename,
@@ -89,7 +102,7 @@ def inference_zh(model, step, configs, vocoder, device,
         emotion_map = json.load(f)
     
     # get text
-    raw_text = "不久以后，王后果然生下了一个可爱的小公主。"
+    raw_text = "我们两合不来，还经常吵架"
     id = raw_text[:100]
     phones = preprocess_mandarin(raw_text, preprocess_config)
     srcs = np.array(text_to_sequence(phones, preprocess_config["preprocessing"]["text"]["zh_text_cleaners"]))
@@ -101,11 +114,11 @@ def inference_zh(model, step, configs, vocoder, device,
     #get infer speaker and emotion
     speaker = np.array([speaker_map[infer_speaker]])
     emotion_emo = np.array([emotion_map[refer_emotion]])
-    emotion_neu = np.array([0])
+    lang_id = np.array([0])
 
     batchs = [(id, raw_text, 
                 srcs, src_len, max(src_len), 
-                speaker, emotion_emo, emotion_neu,
+                speaker, emotion_emo, lang_id,
                 mels, mel_len, max_mel_len,  
                )]
 
@@ -120,7 +133,7 @@ def inference_zh(model, step, configs, vocoder, device,
 
                             speaker = batch[5],
                             emotion_emo = batch[6],
-                            emotion_neu = batch[7],
+                            lang_id = batch[7],
                             
                             mels = batch[8].unsqueeze(0),
                             mel_len = batch[9],
@@ -198,11 +211,11 @@ def inference_en(model, step, configs, vocoder, device,
     #get infer speaker and emotion
     speaker = np.array([speaker_map[infer_speaker]])
     emotion_emo = np.array([emotion_map[refer_emotion]])
-    emotion_neu = np.array([0])
+    lang_id = np.array([1])
 
     batchs = [(id, raw_text, 
                 srcs, src_len, max(src_len), 
-                speaker, emotion_emo, emotion_neu,
+                speaker, emotion_emo, lang_id,
                 mels, mel_len, max_mel_len,  
                )]
 
@@ -217,7 +230,7 @@ def inference_en(model, step, configs, vocoder, device,
 
                             speaker = batch[5],
                             emotion_emo = batch[6],
-                            emotion_neu = batch[7],
+                            lang_id = batch[7],
                             
                             mels = batch[8].unsqueeze(0),
                             mel_len = batch[9],
@@ -273,16 +286,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--device", type=str, default="cuda:0", help="Device to use")
-    parser.add_argument("-r","--restore_step", type=int, default=200000, help="path to **.tar")
+    parser.add_argument("-r","--restore_step", type=int, default=86000, help="path to **.tar")
 
     parser.add_argument(
-        "-p","--preprocess_config",type=str,required=False,default="config/ESD_zh/preprocess.yaml",help="path to preprocess.yaml",
+        "-p","--preprocess_config",type=str,required=False,default="config/cl_esd/preprocess.yaml",help="path to preprocess.yaml",
     )
     parser.add_argument(
-        "-m", "--model_config", type=str, required=False,default="config/ESD_zh/model.yaml", help="path to model.yaml"
+        "-m", "--model_config", type=str, required=False,default="config/cl_esd/model.yaml", help="path to model.yaml"
     )
     parser.add_argument(
-        "-t", "--train_config", type=str, required=False,default="config/ESD_zh/train.yaml", help="path to train.yaml"
+        "-t", "--train_config", type=str, required=False,default="config/cl_esd/train.yaml", help="path to train.yaml"
     )
 
     args = parser.parse_args()
