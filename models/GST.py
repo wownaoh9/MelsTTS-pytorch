@@ -18,6 +18,11 @@ class GST(nn.Module):
 
         return style_embed.squeeze(1) # [N, 1, 256]
 
+    def infer(self, inputs, input_lengths=None, emotion_emo=None, speaker_embedding=None, language_embedding=None):
+        enc_out = self.encoder(inputs, input_lengths)
+        style_embed = self.stl.infer(enc_out, emotion_emo, speaker_embedding, language_embedding)
+
+        return style_embed.squeeze(1) # [N, 1, 256]
 
 class ReferenceEncoder(nn.Module):
     """Reference Encoder
@@ -151,6 +156,29 @@ class DisentangledSTL(nn.Module):
 
         return style_embed
 
+    def infer(self, inputs, emotion_emo=None, speaker_embedding=None, language_embedding=None):
+        N = inputs.size(0)
+        query = inputs.unsqueeze(1)  # [N, 1, E//2]
+
+        # 根据 emotion_emo id 选择对应的情感嵌入
+        emotion_embeddings = torch.cat([
+            self.angry_embed.unsqueeze(0),
+            self.happy_embed.unsqueeze(0),
+            self.neutral_embed.unsqueeze(0),
+            self.sad_embed.unsqueeze(0),
+            self.surprise_embed.unsqueeze(0)
+        ], dim=0)  # [5, token_num, E // num_heads]
+
+        # emotion_emo 是一个 [N] 的 tensor，表示每个样本的情感类别
+        keys_emo = F.tanh(emotion_embeddings[emotion_emo])  # [N, token_num, E // num_heads]
+
+        keys_noise = F.tanh(self.noise_embed).unsqueeze(0).expand(N, -1, -1)
+        keys_spk = F.tanh(speaker_embedding).unsqueeze(0).expand(N, -1, -1)
+        keys_lang = F.tanh(language_embedding).unsqueeze(0).expand(N, -1, -1)
+
+        style_embed = self.attention.infer(query, keys_emo, keys_noise, keys_spk, keys_lang)
+
+        return style_embed
 
 class StyleAttention(nn.Module):
     '''
@@ -198,6 +226,21 @@ class StyleAttention(nn.Module):
 
         # Concatenate outputs from all feature types
         out = out_emo + out_noise + out_spk + out_lang  # [N, T_q, num_units * 4]
+
+        # Final linear transformation (W^O)
+        out = self.W_out(out)  # [N, T_q, num_units]
+
+        return out
+
+    def infer(self, query, key_emo, key_noise, key_spk, key_lang):
+        # Single-head attention for each feature type
+        out_emo = self.single_head_attention(query, key_emo, self.W_query_emo, self.W_key_emo, self.W_value_emo)
+        out_noise = self.single_head_attention(query, key_noise, self.W_query_noise, self.W_key_noise, self.W_value_noise)
+        out_spk = self.single_head_attention(query, key_spk, self.W_query_spk, self.W_key_spk, self.W_value_spk)
+        out_lang = self.single_head_attention(query, key_lang, self.W_query_lang, self.W_key_lang, self.W_value_lang)
+
+        # Concatenate outputs from all feature types
+        out = out_emo  # [N, T_q, num_units * 4]
 
         # Final linear transformation (W^O)
         out = self.W_out(out)  # [N, T_q, num_units]

@@ -27,7 +27,8 @@ class Dataset(Dataset):
             self.emotion_map = json.load(f)
         self.zh_text_cleaners = preprocess_config["preprocessing"]["text"]["zh_text_cleaners"]
         self.en_text_cleaners = preprocess_config["preprocessing"]["text"]["en_text_cleaners"]
-        self.zh_speakers = {"0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010", "biaobei"}
+        # "0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010" for esd_zh speakers; "001", "002", "003", "004" for DOE speakers
+        self.zh_speakers = {"0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010", "biaobei", "001", "002", "003", "004"} 
         self.en_speakers = {"0011", "0012", "0013", "0014", "0015", "0016", "0017", "0018", "0019", "0020", "ljspeech"}
         self.sort = sort
         self.drop_last = drop_last

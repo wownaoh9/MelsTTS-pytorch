@@ -62,32 +62,32 @@ def main(args, configs):    #args是命令行输入，configs是配置文件
     vocoder = get_vocoder(model_config, device)
 
     # zh
-    emotion_list = ["Neutral","Angry","Happy","Sad","Surprise"]
-    basename_list = ["000326", "000676", "001026", "001376", "001726"]
-    refer_speaker_list = ["0003", "0004", "0007", "0008", ]
-    infer_speaker_list = ["0003", "0004", "0007", "0008"]
+    emotion_list = ["Angry"]
+    basename_list = ["020002"]
+    refer_speaker_list = ["003"]
+    infer_speaker_list = ["003"]
     for infer_speaker_str in infer_speaker_list:
         for refer_speaker_str in refer_speaker_list:
             for (emotion_str, basename_str) in zip(emotion_list, basename_list):
-                basename_str = f"{refer_speaker_str}_{basename_str}" 
+                basename_str = f"{basename_str}" 
                 inference_zh(model, step = step, configs = configs,
                             infer_speaker = infer_speaker_str,
                             refer_speaker = refer_speaker_str, refer_emotion = emotion_str, refer_basename = basename_str, 
                             vocoder=vocoder, device=device)
     
     # en
-    emotion_list = ["Neutral","Angry","Happy","Sad","Surprise"]
-    basename_list = ["000326", "000676", "001026", "001376", "001726"]
-    refer_speaker_list = ["0003", "0004", "0007", "0008", ]
-    infer_speaker_list = ["0003", "0004", "0007", "0008"]
-    for infer_speaker_str in infer_speaker_list:
-        for refer_speaker_str in refer_speaker_list:
-            for (emotion_str, basename_str) in zip(emotion_list, basename_list):
-                basename_str = f"{refer_speaker_str}_{basename_str}" 
-                inference_en(model, step = step, configs = configs,
-                            infer_speaker = infer_speaker_str,
-                            refer_speaker = refer_speaker_str, refer_emotion = emotion_str, refer_basename = basename_str, 
-                            vocoder=vocoder, device=device)
+    # emotion_list = ["Angry"]
+    # basename_list = ["020002"]
+    # refer_speaker_list = ["003"]
+    # infer_speaker_list = ["003"]
+    # for infer_speaker_str in infer_speaker_list:
+    #     for refer_speaker_str in refer_speaker_list:
+    #         for (emotion_str, basename_str) in zip(emotion_list, basename_list):
+    #             basename_str = f"{refer_speaker_str}_{basename_str}" 
+    #             inference_en(model, step = step, configs = configs,
+    #                         infer_speaker = infer_speaker_str,
+    #                         refer_speaker = refer_speaker_str, refer_emotion = emotion_str, refer_basename = basename_str, 
+    #                         vocoder=vocoder, device=device)
 def inference_zh(model, step, configs, vocoder, device,
                 infer_speaker,
                 refer_speaker, refer_emotion, refer_basename,
@@ -125,7 +125,7 @@ def inference_zh(model, step, configs, vocoder, device,
     for batch in batchs:
         batch = to_device(batch, device)
         with torch.no_grad():
-
+            model.eval()
             output = model.infer(
                             srcs = batch[2].unsqueeze(0),
                             src_len = batch[3],
@@ -173,6 +173,8 @@ def inference_zh(model, step, configs, vocoder, device,
         save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-zh", "ESD-en", infer_speaker, refer_speaker)
     elif infer_speaker in ["ljspeech", "biaobei"]:
         save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-zh", "ljs_biaobei", infer_speaker, refer_speaker)
+    elif infer_speaker in ["001", "002", "003", "004"]:
+        save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-en", "DOE", infer_speaker, refer_speaker)
     os.makedirs(save_dir, exist_ok=True)
     audio = wav_prediction
     scipy.io.wavfile.write(
@@ -222,7 +224,7 @@ def inference_en(model, step, configs, vocoder, device,
     for batch in batchs:
         batch = to_device(batch, device)
         with torch.no_grad():
-
+            model.eval()
             output = model.infer(
                             srcs = batch[2].unsqueeze(0),
                             src_len = batch[3],
@@ -270,6 +272,8 @@ def inference_en(model, step, configs, vocoder, device,
         save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-en", "ESD-en", infer_speaker, refer_speaker)
     elif infer_speaker in ["ljspeech", "biaobei"]:
         save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-en", "ljs_biaobei", infer_speaker, refer_speaker)
+    elif infer_speaker in ["001", "002", "003", "004"]:
+        save_dir = os.path.join(train_config["path"]["result_path"], f"{step}", "infer-en", "DOE", infer_speaker, refer_speaker)
     os.makedirs(save_dir, exist_ok=True)
     audio = wav_prediction
     scipy.io.wavfile.write(
@@ -286,7 +290,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--device", type=str, default="cuda:0", help="Device to use")
-    parser.add_argument("-r","--restore_step", type=int, default=86000, help="path to **.tar")
+    parser.add_argument("-r","--restore_step", type=int, default=1700, help="path to **.tar")
 
     parser.add_argument(
         "-p","--preprocess_config",type=str,required=False,default="config/cl_esd/preprocess.yaml",help="path to preprocess.yaml",

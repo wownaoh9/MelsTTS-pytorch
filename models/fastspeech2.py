@@ -30,9 +30,6 @@ class FastSpeech2(nn.Module):
         #emo init
         self.coarse_emo_extraction_module = CoarseEmoExtractionModule(preprocess_config, model_config)
 
-
-
-
         
     def forward(            
             self,
@@ -96,7 +93,7 @@ class FastSpeech2(nn.Module):
             output,
             postnet_output,
             p_predictions, e_predictions, log_d_predictions, d_rounded,
-            src_mask, mel_mask, src_len, mel_lens,       #9
+            src_mask, mel_masks, src_len, mel_lens,       #9
         )
 
 
@@ -134,7 +131,7 @@ class FastSpeech2(nn.Module):
         output = output + self.spk_lang_linear(lang_emb).unsqueeze(1).repeat(1, output.shape[1], 1)
 
         # coarse emo extraction
-        coarse_emo_emb, cls_utter = self.coarse_emo_extraction_module(mels, mel_len, emotion_emo, speaker_emb, lang_emb)
+        coarse_emo_emb, cls_utter = self.coarse_emo_extraction_module.infer(mels, mel_len, emotion_emo, speaker_emb, lang_emb)
         
         output = output + coarse_emo_emb.unsqueeze(1).repeat(1, output.size(1), 1)
 
@@ -170,5 +167,5 @@ class FastSpeech2(nn.Module):
             output,
             postnet_output,
             p_predictions, e_predictions, log_d_predictions, d_rounded,
-            src_mask, mel_mask, src_len, mel_lens,       #9
+            src_mask, mel_masks, src_len, mel_lens,       #9
         )

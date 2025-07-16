@@ -8,6 +8,7 @@ A PyTorch implementation of [**MELS-TTS : Multi-Emotion Multi-Lingual Multi-Spea
 
 # Updates
 - 2025/6/30: First Initial Commit
+- 2025/7/16: Compelete Inference code
 
 ## Dependencies
 We recommend using a Python 3.10 environment.

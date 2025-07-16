@@ -41,6 +41,7 @@ def evaluate(model, step, configs, logger=None, vocoder=None, device=None):
             batch = to_device(batch, device)
             with torch.no_grad():
                 # Forward
+                model.eval()
                 output = model(
                                 *batch[2:],
                                 train = True

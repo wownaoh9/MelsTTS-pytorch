@@ -217,7 +217,6 @@ def main(args, configs):    # args are command line arguments, configs are confi
                     outer_bar.write(f"Save train example at step: {step}")
             
                     #evaluate
-                    model.eval()
                     message = evaluate(model, step, configs, val_logger, vocoder, device)
                     outer_bar.write(f"Save val example at step: {step}")
                     with open(os.path.join(val_log_path, "log.txt"), "a") as f:

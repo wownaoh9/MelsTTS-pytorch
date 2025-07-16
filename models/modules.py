@@ -96,6 +96,11 @@ class CoarseEmoExtractionModule(nn.Module):
         cls_emb = coarse_emo_emb 
         return coarse_emo_emb, cls_emb
 
+    def infer(self, mels, mel_len, emotion_emo, speaker_embedding, language_embedding):
+        coarse_emo_emb = self.GST.infer(mels, mel_len, emotion_emo, speaker_embedding, language_embedding)
+        cls_emb = coarse_emo_emb 
+        return coarse_emo_emb, cls_emb
+
 class Classifier(nn.Module):
     """Classifier
     - a Full-connected layer and a soft-max layer
