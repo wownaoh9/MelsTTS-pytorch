@@ -63,9 +63,9 @@ def main(args, configs):    #args是命令行输入，configs是配置文件
 
     # zh
     emotion_list = ["Angry"]
-    basename_list = ["020002"]
-    refer_speaker_list = ["003"]
-    infer_speaker_list = ["003"]
+    basename_list = [""]
+    refer_speaker_list = [""]
+    infer_speaker_list = [""]
     for infer_speaker_str in infer_speaker_list:
         for refer_speaker_str in refer_speaker_list:
             for (emotion_str, basename_str) in zip(emotion_list, basename_list):
